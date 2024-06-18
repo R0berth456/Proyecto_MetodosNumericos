@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 from scipy.optimize import bisect
-
+import pandas as pd #Instalar pip install pandas
 
 def calcular_tasa_interes_biseccion():
     try:
@@ -73,13 +73,42 @@ def mostrar_resultado(tasa_interes):
 
         saldo = deposito_inicial
         datos = []
-
+        data ={frecuencia: [], 'Aporte': [], 'Capital' : [], 'Ganancia' : [], 'Total' : []}
+        aux = 0
         # Cálculo del interés compuesto y actualización del saldo
         for i in range(1, periodos * n + 1):
             interes = saldo * (tasa_interes / 100 / n)
             saldo += aportes + interes
+            aux = saldo
+            if i == 1:
+               frecuencia = 1
+               aporte = deposito_inicial
+               capital = deposito_inicial
+               ganancia = interes
+               total = saldo
+               data['Frecuencia'].append(frecuencia)
+               data['Aporte'].append(aporte)
+               data['Capital'].append(capital)
+               data['Ganancia'].append(ganancia)
+               data['Total'].append(total)
+            else:
+               frecuencia = i
+               aporte = aportes
+               capital = aux
+               ganancia = interes
+               total = saldo
+               data['Frecuencia'].append(frecuencia)
+               data['Aporte'].append(aporte)
+               data['Capital'].append(capital)
+               data['Ganancia'].append(ganancia)
+               data['Total'].append(total)
             datos.append((i, aportes, saldo - interes, interes, saldo))
-
+        
+        #Creacion de la tabla de valores    
+        df = pd.DataFrame(data)
+        df.to_excel('tabla.xlsx', index = False)
+        print(df)
+        
         # Creación de la figura para graficar
         fig = Figure(figsize=(10, 6), dpi=100)
         ax = fig.add_subplot(111)
